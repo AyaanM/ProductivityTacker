@@ -6,14 +6,13 @@
 //
 
 import SpriteKit
-import GameplayKit
 
 class Stopwatch {
     
     var timer: Timer = Timer()
     var count: Int = 0
     var timerCounting: Bool = false
-    var timeString: String = ""
+    var timeString: String = "00:00:00"
     
     func toggle() {
         //toggle timer on off
@@ -29,7 +28,7 @@ class Stopwatch {
     @objc func timerCounter() {
         //increase count (seconds) and get timer string
         count += 1
-        var timeString = getTimeString(seconds: count)
+        timeString = getTimeString(seconds: count)
     }
  
     func getTimeString(seconds: Int) -> String {
@@ -38,9 +37,7 @@ class Stopwatch {
         let minutes = (seconds % 3600) / 60
         let seconds = (seconds % 3600) % 60
         
-        timeString += "\(String(format: "%02d", hours)): "
-        timeString += "\(String(format: "%02d", minutes)): "
-        timeString += "\(String(format: "%02d", seconds))"
+        timeString = "\(String(format: "%02d", hours)): \(String(format: "%02d", minutes)): \(String(format: "%02d", seconds))"
         return timeString
         
     }
@@ -49,6 +46,7 @@ class Stopwatch {
         // reset the timer by setting count to 0
         count = 0
         timer.invalidate() //stop timer
+        timerCounting = false
         timeString = getTimeString(seconds: count)
     }
 }
@@ -58,21 +56,73 @@ class GameScene: SKScene {
     //initialize stopwatch class
     var watch = Stopwatch()
     
-    var timeLabel: SKLabelNode!
-    var time = "00:00:00" {
+    var startStopLabel: SKLabelNode!
+    var timerCounting: Bool = false {
         didSet {
-            timeLabel.text = time
+            if timerCounting {
+                startStopLabel.text = "Stop"
+            } else {
+                startStopLabel.text = "Start"
+            }
         }
     }
+    
+    var resetLabel: SKLabelNode!
+    var timeLabel: SKLabelNode!
+    var time = "00:00:00"
         
     override func didMove(to view: SKView) {
         
-        //create the timeLabel
+        //create the time display
         timeLabel = SKLabelNode(fontNamed: "Hoefler Text")
         timeLabel.fontSize = 40
         timeLabel.text = "00:00:00"
         timeLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height - 125)
         addChild(timeLabel)
+        
+        //create start stop button
+        startStopLabel = SKLabelNode(fontNamed: "Hoefler Text")
+        startStopLabel.fontSize = 45
+        startStopLabel.text = "Start"
+        startStopLabel.position = CGPoint(x: self.size.width / 3, y: self.size.height - 200)
+        addChild(startStopLabel)
+        
+        //create reset button
+        resetLabel = SKLabelNode(fontNamed: "Hoefler Text")
+        resetLabel.fontSize = 45
+        resetLabel.text = "Reset"
+        resetLabel.position = CGPoint(x: self.size.width / 1.5, y: self.size.height - 200)
+        addChild(resetLabel)
+        
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+            if let touch = touches.first {
+                    let location = touch.location(in: self)
+                    let objects = nodes(at: location)
+            
+                if objects.contains(startStopLabel) {
+                    watch.toggle()
+                    time = watch.timeString
+                    if (watch.timerCounting) {
+                        timerCounting = true
+                    } else {
+                        timerCounting = false
+                    }
+                }
+                
+                if objects.contains(resetLabel) {
+                    watch.resetTimer()
+                    timerCounting = false
+                }
+        }
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+            super.update(currentTime)
+            
+            // Update the time label on every frame
+            timeLabel.text = watch.timeString
+        }
     
 }
