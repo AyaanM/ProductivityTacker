@@ -11,18 +11,16 @@ class Stopwatch {
     
     var timer: Timer = Timer()
     var count: Int = 0
-    var timerCounting: Bool = false
-    var timeString: String = "00:00:00"
+    var timeString: String = "00:00"
     
-    func toggle() {
-        //toggle timer on off
-        if (timerCounting) { //if button tapped (timer running) and already counting, stop timer
-            timerCounting = false
-            timer.invalidate()
-        } else { //if not already counting (timer stopped), run timer
-            timerCounting = true
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerCounter), userInfo: nil, repeats: true) // fires every one second to increase count by 1
-        }
+    func stopTimer() {
+        //stop the timer by invalidating it
+        timer.invalidate()
+    }
+    
+    func startTimer() {
+        //start the timer
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerCounter), userInfo: nil, repeats: true) // fires every one second to increase count by 1
     }
     
     @objc func timerCounter() {
@@ -37,7 +35,11 @@ class Stopwatch {
         let minutes = (seconds % 3600) / 60
         let seconds = (seconds % 3600) % 60
         
-        timeString = "\(String(format: "%02d", hours)): \(String(format: "%02d", minutes)): \(String(format: "%02d", seconds))"
+        timeString = "\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
+        
+        if count >= 3600 { //if 1hr has been reached
+            timeString = "\(String(format: "%02d", hours)):\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
+        }
         return timeString
         
     }
@@ -46,39 +48,46 @@ class Stopwatch {
         // reset the timer by setting count to 0
         count = 0
         timer.invalidate() //stop timer
-        timerCounting = false
         timeString = getTimeString(seconds: count)
     }
+    
 }
 
 class GameScene: SKScene {
     
-    //initialize stopwatch class
-    var watch = Stopwatch()
+    //initialize classes
+    var proTimer = Stopwatch()
+    var breakTimer = Stopwatch()
     
+    //define buttons
+    var takeBreakLabel: SKLabelNode!
+    var resetLabel: SKLabelNode!
     var startStopLabel: SKLabelNode!
-    var timerCounting: Bool = false {
+    var timerCounting: Bool = false { //timer not count
         didSet {
-            if timerCounting {
+            if timerCounting == true { //time is counting
                 startStopLabel.text = "Stop"
-            } else {
+            } else { //timer not counting
                 startStopLabel.text = "Start"
             }
         }
     }
     
-    var resetLabel: SKLabelNode!
-    var timeLabel: SKLabelNode!
-    var time = "00:00:00"
+    //define displays
+    var breakTimeDisplay: SKLabelNode!
+    var timeDisplay: SKLabelNode!
+    var proTime = "00:00:00"
+    var breakTime = "00:00"
         
     override func didMove(to view: SKView) {
         
-        //create the time display
-        timeLabel = SKLabelNode(fontNamed: "Hoefler Text")
-        timeLabel.fontSize = 40
-        timeLabel.text = "00:00:00"
-        timeLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height - 125)
-        addChild(timeLabel)
+        //create the productivity time display
+        timeDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        timeDisplay.name = "time"
+        timeDisplay.fontSize = 40
+        timeDisplay.text = proTime
+        timeDisplay.position = CGPoint(x: self.size.width / 2, y: self.size.height - 125)
+        addChild(timeDisplay)
         
         //create start stop button
         startStopLabel = SKLabelNode(fontNamed: "Hoefler Text")
@@ -94,6 +103,22 @@ class GameScene: SKScene {
         resetLabel.position = CGPoint(x: self.size.width / 1.5, y: self.size.height - 200)
         addChild(resetLabel)
         
+        //create take a break button
+        takeBreakLabel = SKLabelNode(fontNamed: "Hoefler Text")
+        takeBreakLabel.fontSize = 30
+        takeBreakLabel.text = "Take a Break"
+        takeBreakLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height - 275)
+        takeBreakLabel.isHidden = true
+        addChild(takeBreakLabel)
+        
+        //create the breaktime display
+        breakTimeDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        breakTimeDisplay.name = "break"
+        breakTimeDisplay.fontSize = 25
+        breakTimeDisplay.text = breakTime
+        breakTimeDisplay.position = CGPoint(x: self.size.width / 2, y: self.size.height - 325)
+        breakTimeDisplay.isHidden = true
+        addChild(breakTimeDisplay)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -102,27 +127,45 @@ class GameScene: SKScene {
                     let objects = nodes(at: location)
             
                 if objects.contains(startStopLabel) {
-                    watch.toggle()
-                    time = watch.timeString
-                    if (watch.timerCounting) {
-                        timerCounting = true
+                    
+                    if timerCounting {
+                        proTimer.stopTimer()
                     } else {
-                        timerCounting = false
+                        proTimer.startTimer()
                     }
+                    
+                    
+                    timerCounting = !timerCounting //toggle it so true/false vice versa
+                    
+                    breakTimer.resetTimer() //stop timer for break
+                    
+                    takeBreakLabel.isHidden = false //display break label
+                    breakTimeDisplay.isHidden = false
+                    
                 }
                 
                 if objects.contains(resetLabel) {
-                    watch.resetTimer()
-                    timerCounting = false
+                    proTimer.resetTimer()
+                    timerCounting = false //now shows start
+                }
+                
+                if objects.contains(takeBreakLabel) {
+                    proTimer.stopTimer() //pause the protimer and start break timer
+                    breakTimer.startTimer()
+                    
+                    takeBreakLabel.isHidden = true
+                
+                    timerCounting = false //now shows start
                 }
         }
     }
     
     override func update(_ currentTime: TimeInterval) {
             super.update(currentTime)
-            
+        
             // Update the time label on every frame
-            timeLabel.text = watch.timeString
+            timeDisplay.text = proTimer.timeString
+            breakTimeDisplay.text = breakTimer.timeString
         }
     
 }
