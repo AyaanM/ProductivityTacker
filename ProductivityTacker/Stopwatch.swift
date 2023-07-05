@@ -57,25 +57,3 @@ class Stopwatch {
     }
     
 }
-
-class viewController: UIViewController {
-    
-    func pickTime() {
-        
-        guard let viewController = self.view?.window?.rootViewController else {
-                return
-            }
-        
-        let ac = UIAlertController(title: "Pick Time", message: "Pick the time you would like to focus for, a notification will be sent once you have surpassed the time. If you pick 'I will decide', no notification will be sent and you can continue uninterrupted focus!", preferredStyle: .alert)
-        
-        let times = ["10 minutes", "25 minutes", "1 hour", "2 hours", "3 hours", "I will decide"]
-        
-        for time in times {
-            ac.addAction(UIAlertAction(title: time, style: .default))
-        }
-        
-        ac.addAction(UIAlertAction(title: "Cancle", style: .default))
-        
-        viewController.present(ac, animated: true)
-    }
-}
