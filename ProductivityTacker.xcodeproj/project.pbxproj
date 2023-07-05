@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D387995A2A54DA9B001B4FB5 /* Stopwatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D38799592A54DA9B001B4FB5 /* Stopwatch.swift */; };
 		D3A032422A50924F00832339 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A032412A50924F00832339 /* AppDelegate.swift */; };
 		D3A032442A50924F00832339 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D3A032432A50924F00832339 /* GameScene.sks */; };
 		D3A032482A50924F00832339 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A032472A50924F00832339 /* GameScene.swift */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D38799592A54DA9B001B4FB5 /* Stopwatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stopwatch.swift; sourceTree = "<group>"; };
 		D3A0323E2A50924F00832339 /* ProductivityTacker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProductivityTacker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A032412A50924F00832339 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D3A032432A50924F00832339 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -60,6 +62,7 @@
 				D3A032412A50924F00832339 /* AppDelegate.swift */,
 				D3A032432A50924F00832339 /* GameScene.sks */,
 				D3A032472A50924F00832339 /* GameScene.swift */,
+				D38799592A54DA9B001B4FB5 /* Stopwatch.swift */,
 				D3A032492A50924F00832339 /* GameViewController.swift */,
 				D3A0324B2A50924F00832339 /* Main.storyboard */,
 				D3A0324E2A50925000832339 /* Assets.xcassets */,
@@ -143,6 +146,7 @@
 				D3A032482A50924F00832339 /* GameScene.swift in Sources */,
 				D3A0324A2A50924F00832339 /* GameViewController.swift in Sources */,
 				D3A032422A50924F00832339 /* AppDelegate.swift in Sources */,
+				D387995A2A54DA9B001B4FB5 /* Stopwatch.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,6 +301,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -325,6 +330,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
