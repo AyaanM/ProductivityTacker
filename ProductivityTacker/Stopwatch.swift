@@ -21,6 +21,7 @@ class Stopwatch {
     // for the countdown functions
     var remainingTimeString: String = "00:00"
     var remainingTime: Int = 0 //default values it always switches to if nothing provided
+    var initialCountdownTime: Int = 0
     
     init(timerName: String) {
         self.timerName = timerName

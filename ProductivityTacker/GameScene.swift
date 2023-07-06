@@ -122,7 +122,7 @@ class GameScene: SKScene {
                     
                     if !focus.timerCounting {
                         focus.startTimer() //send in the seconds of remaining time
-                        rest.stopTimer()
+                        rest.resetTimer()
                         focusStartStopButton.text = "Stop"
                         restStartStopButton.text = "Start"
                     } else {
@@ -160,7 +160,7 @@ class GameScene: SKScene {
     func pickTime(timerName: String) {
         // Take in what type of timer to set and pick at what time the timer should be set
         var messages: String
-        var times: [String: Int] = [:] //the time in string format:the seconds in int format
+        var times: [(String, Int)] //the time in string format:the seconds in int format
         
         guard let viewController = self.view?.window?.rootViewController else {
                 return
@@ -169,17 +169,18 @@ class GameScene: SKScene {
         // define action for different timer types
         if timerName == "focus" { //if the focus timer is toggled
             messages = "Pick the time you would like to focus for, 'run timer already' means no set time (uniterrupted focus)"
-            times = ["10 minutes": 600, "25 minutes": 1500, "45 minutes": 2700, "1 hour": 3600, "2 hours": 7200, "3 hours": 10800]
+            times = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
         } else {
             messages = "Pick the time you would like to take a break for, a notification will be sent when the break ends. If you exceed your break by 5 minutes your phone will explode."
-            times = ["5 minutes": 300, "10 minutes": 600, "15 minutes": 900, "30 minutes": 1800]
+            times = [("5 minutes", 300), ("10 minutes", 600), ("15 minutes", 900), ("30 minutes", 1800)]
         }
-        
+         
         // create the alert
         let ac = UIAlertController(title: "Pick Time", message: messages, preferredStyle: .actionSheet)
         
         // depending on what was picked, change variables
-        for (tString, tInt) in times { //time string and time int
+        for time in times { //time string and time int]
+            let (tString, tInt) = time
             ac.addAction(UIAlertAction(title: tString, style: .default) {
                 [self] _ in
                 if timerName == "focus" {
