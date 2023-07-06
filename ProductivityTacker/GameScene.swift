@@ -11,63 +11,88 @@ import SpriteKit
 class GameScene: SKScene {
     
     //initialize classes
-    var focusTimer = Stopwatch()
-    var breakTimer = Stopwatch()
+    var focus = Stopwatch(timerType: "focus")
+    var rest = Stopwatch(timerType: "rest")
     
     //define buttons
-    var takeBreakLabel: SKLabelNode!
-    var startLabel: SKLabelNode!
-    var stopLabel: SKLabelNode!
+    var focusStartButton: SKLabelNode!
+    var focusStopButton: SKLabelNode!
     
     //define displays
-    var breakTimeDisplay: SKLabelNode!
-    var focusTimeDisplay: SKLabelNode!
-    var timeToFocusDisplay: SKLabelNode!
-    var timeToBreakDisplay: SKLabelNode!
+    var focusStopwatchDisplay: SKLabelNode!
+    var focusTimerDisplay: SKLabelNode!
+    
+    var restStopwatchDisplay: SKLabelNode!
+    var restTimerDisplay: SKLabelNode!
+    
+    //define standalone labels
+    var focusLabel: SKLabelNode!
+    var restLabel: SKLabelNode!
     
     //define variables
-    var timeToFocus: Int = 0 //time chosen in seconds
-    var timeToBreak: Int = 0
+    var focusTimer: Int = 0 //time chosen in seconds
+    var restTimer: Int = 0
         
     override func didMove(to view: SKView) {
         
-        //create the productivity time display
-        focusTimeDisplay = SKLabelNode(fontNamed: "Hoefler Text")
-        focusTimeDisplay.name = "time"
-        focusTimeDisplay.fontSize = 40
-        focusTimeDisplay.text = "00:00"
-        focusTimeDisplay.position = CGPoint(x: self.size.width / 2, y: self.size.height - 125)
-        addChild(focusTimeDisplay)
+        //SKNODES FOR THE FOCUS DISPLAY
+        //create the focus standalone label
+        focusLabel = SKLabelNode(fontNamed: "Hoefler Text")
+        focusLabel.fontSize = 50
+        focusLabel.text = "Focus Session"
+        focusLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height / 1.5)
+        addChild(focusLabel)
         
-        //create start button
-        startLabel = SKLabelNode(fontNamed: "Hoefler Text")
-        startLabel.fontSize = 45
-        startLabel.text = "Start"
-        startLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height - 200)
-        addChild(startLabel)
+        //create the focus timer display
+        focusTimerDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        focusTimerDisplay.fontSize = 40
+        focusTimerDisplay.text = "25:00"
+        focusTimerDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
+        addChild(focusTimerDisplay)
         
-        //create stop button
-        stopLabel = SKLabelNode(fontNamed: "Hoefler Text")
-        stopLabel.fontSize = 45
-        stopLabel.text = "Stop"
-        stopLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height - 200)
-        stopLabel.isHidden = true //upon app launch hide stop label since timer not running
-        addChild(stopLabel)
+        //create the focus stopwatch display
+        focusStopwatchDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        focusStopwatchDisplay.fontSize = 40
+        focusStopwatchDisplay.text = "00:00"
+        focusStopwatchDisplay.position = CGPoint(x: self.size.width / 1.5, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
+        addChild(focusStopwatchDisplay)
         
-        //create take a break button
-        takeBreakLabel = SKLabelNode(fontNamed: "Hoefler Text")
-        takeBreakLabel.fontSize = 30
-        takeBreakLabel.text = "Take a Break"
-        takeBreakLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height - 275)
-        addChild(takeBreakLabel)
+        //create start focus button button
+        focusStartButton = SKLabelNode(fontNamed: "Hoefler Text")
+        focusStartButton.fontSize = 40
+        focusStartButton.text = "Start"
+        focusStartButton.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 1.5) - (focusLabel.frame.height*4))
+        addChild(focusStartButton)
         
-        //create the breaktime display
-        breakTimeDisplay = SKLabelNode(fontNamed: "Hoefler Text")
-        breakTimeDisplay.name = "break"
-        breakTimeDisplay.fontSize = 25
-        breakTimeDisplay.text = "00:00"
-        breakTimeDisplay.position = CGPoint(x: self.size.width / 2, y: self.size.height - 325)
-        addChild(breakTimeDisplay)
+        //create stop focus button
+        focusStopButton = SKLabelNode(fontNamed: "Hoefler Text")
+        focusStopButton.fontSize = 40
+        focusStopButton.text = "Stop"
+        focusStopButton.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 1.5) - (focusLabel.frame.height*4))
+        focusStopButton.isHidden = true //upon app launch hide stop label since timer not running
+        addChild(focusStopButton)
+        
+        //SK NODES FOR THE BREAK DISPLAY
+        //create the break label standalone display
+        restLabel = SKLabelNode(fontNamed: "Hoefler Text")
+        restLabel.fontSize = 40
+        restLabel.text = "Break Session"
+        restLabel.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 1.5) - (focusLabel.frame.height*6.5))
+        addChild(restLabel)
+        
+        //create the breaktime timer display
+        restTimerDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        restTimerDisplay.fontSize = 35
+        restTimerDisplay.text = "05:00"
+        restTimerDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*8.5))
+        addChild(restTimerDisplay)
+        
+        //create the breaktime stopwatch display
+        restStopwatchDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        restStopwatchDisplay.fontSize = 35
+        restStopwatchDisplay.text = "00:00"
+        restStopwatchDisplay.position = CGPoint(x: self.size.width / 1.5, y: (self.size.height / 1.5) - (focusLabel.frame.height*8.5))
+        addChild(restStopwatchDisplay)
         
     }
     
@@ -76,46 +101,36 @@ class GameScene: SKScene {
                     let location = touch.location(in: self)
                     let objects = nodes(at: location)
                 
-                if objects.contains(focusTimeDisplay) {
-                    if !focusTimer.timerCounting { //if the proTimer isn't already working
+                if objects.contains(focusTimerDisplay) {
+                    if !focus.timerCounting { //if the proTimer isn't already working
                         pickTime(timerType: "focusTimer")
                     }
                 }
                 
-                if objects.contains(breakTimeDisplay) {
-                    if !breakTimer.timerCounting { //if the proTimer isn't already working
+                if objects.contains(restTimerDisplay) {
+                    if !rest.timerCounting { //if the proTimer isn't already working
                         pickTime(timerType: "breakTimer")
                     }
-                    print(timeToBreak)
                 }
             
-                if objects.contains(startLabel) {
+                if objects.contains(focusStartButton) {
                     
-                    startLabel.isHidden = true
-                    stopLabel.isHidden = false
+                    focusStartButton.isHidden = true
+                    focusStopButton.isHidden = false
                     
-                    breakTimer.resetTimer() //stop timer for break
+                    rest.resetTimer() //stop timer for break
                     
-                    focusTimer.startTimer()
+                    focus.startTimer()
                     
                 }
                 
-                if objects.contains(stopLabel) {
-                    focusTimer.stopTimer()
+                if objects.contains(focusStopButton) {
+                    focus.stopTimer()
                     
-                    stopLabel.isHidden = true
-                    startLabel.isHidden = false
+                    focusStopButton.isHidden = true
+                    focusStartButton.isHidden = false
                     
-                    breakTimer.resetTimer()
-                }
-                
-                if objects.contains(takeBreakLabel) {
-                    focusTimer.stopTimer() //pause the protimer and start break timer
-                    
-                    startLabel.isHidden = true
-                    stopLabel.isHidden = false
-                    
-                    breakTimer.startTimer()
+                    rest.resetTimer()
                 }
         }
     }
@@ -124,14 +139,14 @@ class GameScene: SKScene {
         super.update(currentTime)
     
         // Update the time label on every frame
-        focusTimeDisplay.text = focusTimer.timeString
-        breakTimeDisplay.text = breakTimer.timeString
+        focusStopwatchDisplay.text = focus.timeString
+        restStopwatchDisplay.text = rest.timeString
         }
     
     func pickTime(timerType: String) {
         // Take in what type of timer to set and pick at what time the timer should be set
         var messages: String
-        var times: [String: Int] = [:]
+        var times: [String: Int] = [:] //the time in string format:the seconds in int format
         
         guard let viewController = self.view?.window?.rootViewController else {
                 return
@@ -140,7 +155,7 @@ class GameScene: SKScene {
         // define action for different timer types
         if timerType == "focusTimer" { //if the focus timer is toggled
             messages = "Pick the time you would like to focus for, 'run timer already' means no set time (uniterrupted focus)"
-            times = ["10 minutes": 600, "25 minutes": 1500, "1 hour": 3600, "2 hours": 7200, "3 hours": 10800, "I will decide": -1]
+            times = ["10 minutes": 600, "25 minutes": 1500, "45 minutes": 2700, "1 hour": 3600, "2 hours": 7200, "3 hours": 10800]
         } else {
             messages = "Pick the time you would like to take a break for, a notification will be sent when the break ends. If you exceed your break by 5 minutes your phone will explode."
             times = ["5 minutes": 300, "10 minutes": 600, "15 minutes": 900, "30 minutes": 1800]
@@ -154,11 +169,11 @@ class GameScene: SKScene {
             ac.addAction(UIAlertAction(title: tString, style: .default) {
                 [self] _ in
                 if timerType == "focusTimer" {
-                    self.timeToFocus = tInt
-                    self.timeToFocusDisplay.text = self.focusTimer.getTimeString(seconds: tInt)
+                    self.focusTimer = tInt
+                    self.focusTimerDisplay.text = self.focus.getTimeString(seconds: tInt)
                 } else {
-                    self.timeToFocus = tInt
-                    self.timeToBreakDisplay.text = self.breakTimer.getTimeString(seconds: tInt)
+                    self.restTimer = tInt
+                    self.restTimerDisplay.text = self.rest.getTimeString(seconds: tInt)
                 }
             })
         }

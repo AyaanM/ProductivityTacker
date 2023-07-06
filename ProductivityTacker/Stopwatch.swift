@@ -10,10 +10,17 @@ import UIKit
 
 class Stopwatch {
     
+    
     var timer: Timer = Timer()
     var count: Int = 0 //count in seconds
     var timeString: String = "00:00"
+    
     var timerCounting: Bool = false //if timer is running or not
+    var timerType: String
+    
+    init(timerType: String) {
+        self.timerType = timerType
+    }
     
     func stopTimer() {
         //stop the timer by invalidating it
@@ -39,13 +46,11 @@ class Stopwatch {
         let minutes = (seconds % 3600) / 60
         let seconds = (seconds % 3600) % 60
         
-        timeString = "\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
-        
-        if count >= 3600 { //if 1hr has been reached
-            timeString = "\(String(format: "%02d", hours)):\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
+        if timerType == "focus" {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
         }
-        return timeString
-        
     }
     
     func resetTimer() {
