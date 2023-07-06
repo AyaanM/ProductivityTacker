@@ -24,6 +24,7 @@ class Stopwatch {
     
     init(timerName: String) {
         self.timerName = timerName
+        self.resetTimer() //do this initially to have defaults set
     }
     
     // FUNCTIONS FOR THE STOPWATCH TIMER
@@ -64,7 +65,12 @@ class Stopwatch {
     func resetTimer() {
         // reset the timer by setting count to 0
         elapsedTime = 0
-        remainingTime = 1500
+        if timerName == "focus" {
+            remainingTime = 1500
+        } else {
+            remainingTime = 300
+        }
+        
         timer.invalidate() //stop timer
         timerCounting = false
         elapsedTimeString = getTimeString(seconds: elapsedTime)

@@ -15,8 +15,8 @@ class GameScene: SKScene {
     var rest = Stopwatch(timerName: "rest")
     
     //define buttons
-    var focusStartButton: SKLabelNode!
-    var focusStopButton: SKLabelNode!
+    var focusStartStopButton: SKLabelNode!
+    var restStartStopButton: SKLabelNode!
     
     //define displays
     var focusStopwatchDisplay: SKLabelNode!
@@ -28,8 +28,6 @@ class GameScene: SKScene {
     //define standalone labels
     var focusLabel: SKLabelNode!
     var restLabel: SKLabelNode!
-    
-    
         
     override func didMove(to view: SKView) {
         
@@ -56,19 +54,11 @@ class GameScene: SKScene {
         addChild(focusStopwatchDisplay)
         
         //create start focus button button
-        focusStartButton = SKLabelNode(fontNamed: "Hoefler Text")
-        focusStartButton.fontSize = 40
-        focusStartButton.text = "Start"
-        focusStartButton.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 1.5) - (focusLabel.frame.height*4))
-        addChild(focusStartButton)
-        
-        //create stop focus button
-        focusStopButton = SKLabelNode(fontNamed: "Hoefler Text")
-        focusStopButton.fontSize = 40
-        focusStopButton.text = "Stop"
-        focusStopButton.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 1.5) - (focusLabel.frame.height*4))
-        focusStopButton.isHidden = true //upon app launch hide stop label since timer not running
-        addChild(focusStopButton)
+        focusStartStopButton = SKLabelNode(fontNamed: "Hoefler Text")
+        focusStartStopButton.fontSize = 40
+        focusStartStopButton.text = "Start"
+        focusStartStopButton.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 1.5) - (focusLabel.frame.height*4))
+        addChild(focusStartStopButton)
         
         //SK NODES FOR THE BREAK DISPLAY
         //create the break label standalone display
@@ -92,6 +82,13 @@ class GameScene: SKScene {
         restStopwatchDisplay.position = CGPoint(x: self.size.width / 1.5, y: (self.size.height / 1.5) - (focusLabel.frame.height*8.5))
         addChild(restStopwatchDisplay)
         
+        //create start focus button button
+        restStartStopButton = SKLabelNode(fontNamed: "Hoefler Text")
+        restStartStopButton.fontSize = 35
+        restStartStopButton.text = "Start"
+        restStartStopButton.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 1.5) - (focusLabel.frame.height*10))
+        addChild(restStartStopButton)
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -102,6 +99,7 @@ class GameScene: SKScene {
                 if objects.contains(focusTimerDisplay) {
                     //choose what time you want to focus for, default is 25:00
                     if !focus.timerCounting { //if the proTimer isn't already working
+                        focus.resetTimer()
                         pickTime(timerName: "focus")
                     }
                 }
@@ -109,25 +107,34 @@ class GameScene: SKScene {
                 if objects.contains(restTimerDisplay) {
                     //choose what time you want to rest for, default is 5:00
                     if !rest.timerCounting { //if the proTimer isn't already working
+                        rest.resetTimer() //to reset the elapsed time
                         pickTime(timerName: "break")
                     }
                 }
             
-                if objects.contains(focusStartButton) {
+                if objects.contains(focusStartStopButton) {
                     
-                    focus.startTimer() //send in the seconds of remaining time
-                    
-                    focusStartButton.isHidden = true
-                    focusStopButton.isHidden = false
-                    
+                    if !focus.timerCounting {
+                        focus.startTimer() //send in the seconds of remaining time
+                        rest.stopTimer()
+                        focusStartStopButton.text = "Stop"
+                        restStartStopButton.text = "Start"
+                    } else {
+                        focus.stopTimer()
+                        focusStartStopButton.text = "Start"
+                    }
                 }
                 
-                if objects.contains(focusStopButton) {
-                    focus.stopTimer()
-                    
-                    focusStopButton.isHidden = true
-                    focusStartButton.isHidden = false
-                    
+                if objects.contains(restStartStopButton) {
+                    if !rest.timerCounting {
+                        rest.startTimer() //send in the seconds of remaining time
+                        focus.stopTimer()
+                        restStartStopButton.text = "Stop"
+                        focusStartStopButton.text = "Start"
+                    } else {
+                        rest.stopTimer()
+                        restStartStopButton.text = "Start"
+                    }
                 }
         }
     }
@@ -137,7 +144,7 @@ class GameScene: SKScene {
     
         // Update the time label on every frame
         focusStopwatchDisplay.text = focus.elapsedTimeString
-        restStopwatchDisplay.text = rest.remainingTimeString
+        restStopwatchDisplay.text = rest.elapsedTimeString
         
         focusTimerDisplay.text = focus.remainingTimeString
         restTimerDisplay.text = rest.remainingTimeString
