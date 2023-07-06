@@ -11,8 +11,8 @@ import SpriteKit
 class GameScene: SKScene {
     
     //initialize classes
-    var focus = Stopwatch(timerType: "focus")
-    var rest = Stopwatch(timerType: "rest")
+    var focus = Stopwatch(timerName: "focus")
+    var rest = Stopwatch(timerName: "rest")
     
     //define buttons
     var focusStartButton: SKLabelNode!
@@ -29,9 +29,7 @@ class GameScene: SKScene {
     var focusLabel: SKLabelNode!
     var restLabel: SKLabelNode!
     
-    //define variables
-    var focusTimer: Int = 0 //time chosen in seconds
-    var restTimer: Int = 0
+    
         
     override func didMove(to view: SKView) {
         
@@ -46,14 +44,14 @@ class GameScene: SKScene {
         //create the focus timer display
         focusTimerDisplay = SKLabelNode(fontNamed: "Hoefler Text")
         focusTimerDisplay.fontSize = 40
-        focusTimerDisplay.text = "25:00"
+        focusTimerDisplay.text = focus.remainingTimeString
         focusTimerDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
         addChild(focusTimerDisplay)
         
         //create the focus stopwatch display
         focusStopwatchDisplay = SKLabelNode(fontNamed: "Hoefler Text")
         focusStopwatchDisplay.fontSize = 40
-        focusStopwatchDisplay.text = "00:00"
+        focusStopwatchDisplay.text = rest.remainingTimeString
         focusStopwatchDisplay.position = CGPoint(x: self.size.width / 1.5, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
         addChild(focusStopwatchDisplay)
         
@@ -102,25 +100,25 @@ class GameScene: SKScene {
                     let objects = nodes(at: location)
                 
                 if objects.contains(focusTimerDisplay) {
+                    //choose what time you want to focus for, default is 25:00
                     if !focus.timerCounting { //if the proTimer isn't already working
-                        pickTime(timerType: "focusTimer")
+                        pickTime(timerName: "focus")
                     }
                 }
                 
                 if objects.contains(restTimerDisplay) {
+                    //choose what time you want to rest for, default is 5:00
                     if !rest.timerCounting { //if the proTimer isn't already working
-                        pickTime(timerType: "breakTimer")
+                        pickTime(timerName: "break")
                     }
                 }
             
                 if objects.contains(focusStartButton) {
                     
+                    focus.startTimer() //send in the seconds of remaining time
+                    
                     focusStartButton.isHidden = true
                     focusStopButton.isHidden = false
-                    
-                    rest.resetTimer() //stop timer for break
-                    
-                    focus.startTimer()
                     
                 }
                 
@@ -130,7 +128,6 @@ class GameScene: SKScene {
                     focusStopButton.isHidden = true
                     focusStartButton.isHidden = false
                     
-                    rest.resetTimer()
                 }
         }
     }
@@ -139,11 +136,15 @@ class GameScene: SKScene {
         super.update(currentTime)
     
         // Update the time label on every frame
-        focusStopwatchDisplay.text = focus.timeString
-        restStopwatchDisplay.text = rest.timeString
+        focusStopwatchDisplay.text = focus.elapsedTimeString
+        restStopwatchDisplay.text = rest.remainingTimeString
+        
+        focusTimerDisplay.text = focus.remainingTimeString
+        restTimerDisplay.text = rest.remainingTimeString
+        
         }
     
-    func pickTime(timerType: String) {
+    func pickTime(timerName: String) {
         // Take in what type of timer to set and pick at what time the timer should be set
         var messages: String
         var times: [String: Int] = [:] //the time in string format:the seconds in int format
@@ -153,7 +154,7 @@ class GameScene: SKScene {
             }
         
         // define action for different timer types
-        if timerType == "focusTimer" { //if the focus timer is toggled
+        if timerName == "focus" { //if the focus timer is toggled
             messages = "Pick the time you would like to focus for, 'run timer already' means no set time (uniterrupted focus)"
             times = ["10 minutes": 600, "25 minutes": 1500, "45 minutes": 2700, "1 hour": 3600, "2 hours": 7200, "3 hours": 10800]
         } else {
@@ -168,17 +169,15 @@ class GameScene: SKScene {
         for (tString, tInt) in times { //time string and time int
             ac.addAction(UIAlertAction(title: tString, style: .default) {
                 [self] _ in
-                if timerType == "focusTimer" {
-                    self.focusTimer = tInt
-                    self.focusTimerDisplay.text = self.focus.getTimeString(seconds: tInt)
+                if timerName == "focus" {
+                    focus.remainingTime = tInt
+                    focus.remainingTimeString = self.focus.getTimeString(seconds: tInt)
                 } else {
-                    self.restTimer = tInt
-                    self.restTimerDisplay.text = self.rest.getTimeString(seconds: tInt)
+                    rest.remainingTime = tInt
+                    rest.remainingTimeString = self.rest.getTimeString(seconds: tInt)
                 }
             })
         }
-        
-        ac.addAction(UIAlertAction(title: "Cancel", style: .default))
         
         viewController.present(ac, animated: true)
         
