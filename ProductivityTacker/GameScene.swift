@@ -31,6 +31,14 @@ class GameScene: SKScene {
         
     override func didMove(to view: SKView) {
         
+        let background = SKSpriteNode(imageNamed: "background")
+        background.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+        background.size = CGSize(width: self.size.width, height: self.size.height)
+        background.alpha = 0.5
+        background.blendMode = .replace //draw the node
+        background.zPosition = -1
+        addChild(background)
+        
         //SKNODES FOR THE FOCUS DISPLAY
         //create the focus standalone label
         focusLabel = SKLabelNode(fontNamed: "Hoefler Text")
@@ -99,7 +107,6 @@ class GameScene: SKScene {
                 if objects.contains(focusTimerDisplay) {
                     //choose what time you want to focus for, default is 25:00
                     if !focus.timerCounting { //if the proTimer isn't already working
-                        focus.resetTimer()
                         pickTime(timerName: "focus")
                     }
                 }
@@ -107,7 +114,6 @@ class GameScene: SKScene {
                 if objects.contains(restTimerDisplay) {
                     //choose what time you want to rest for, default is 5:00
                     if !rest.timerCounting { //if the proTimer isn't already working
-                        rest.resetTimer() //to reset the elapsed time
                         pickTime(timerName: "break")
                     }
                 }
