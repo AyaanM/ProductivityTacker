@@ -28,6 +28,10 @@ class GameScene: SKScene {
     //define standalone labels
     var focusLabel: SKLabelNode!
     var restLabel: SKLabelNode!
+    
+    //define vars
+    var focusTimer: Int = 0
+    var restTimer: Int = 0
         
     override func didMove(to view: SKView) {
         
@@ -119,29 +123,36 @@ class GameScene: SKScene {
                 }
             
                 if objects.contains(focusStartStopButton) {
-                    
-                    if !focus.timerCounting {
-                        focus.startTimer() //send in the seconds of remaining time
-                        rest.resetTimer()
-                        focusStartStopButton.text = "Stop"
-                        restStartStopButton.text = "Start"
-                    } else {
-                        focus.stopTimer()
-                        focusStartStopButton.text = "Start"
-                    }
+                    startFocus()
                 }
                 
                 if objects.contains(restStartStopButton) {
-                    if !rest.timerCounting {
-                        rest.startTimer() //send in the seconds of remaining time
-                        focus.stopTimer()
-                        restStartStopButton.text = "Stop"
-                        focusStartStopButton.text = "Start"
-                    } else {
-                        rest.stopTimer()
-                        restStartStopButton.text = "Start"
-                    }
+                    startBreak()
                 }
+        }
+    }
+    
+    func startFocus() {
+        if !focus.timerCounting {
+            focus.startTimer() //send in the seconds of remaining time
+            rest.resetTimer()
+            focusStartStopButton.text = "Stop"
+            restStartStopButton.text = "Start"
+        } else {
+            focus.stopTimer()
+            focusStartStopButton.text = "Start"
+        }
+    }
+    
+    func startBreak() {
+        if !rest.timerCounting {
+            rest.startTimer() //send in the seconds of remaining time
+            focus.stopTimer()
+            restStartStopButton.text = "Stop"
+            focusStartStopButton.text = "Start"
+        } else {
+            rest.stopTimer()
+            restStartStopButton.text = "Start"
         }
     }
     
@@ -155,16 +166,52 @@ class GameScene: SKScene {
         focusTimerDisplay.text = focus.remainingTimeString
         restTimerDisplay.text = rest.remainingTimeString
         
+        checkTimesUp()
+        
         }
     
+    func checkTimesUp() {
+        guard let viewController = (self.view?.window?.rootViewController) else {return}
+        
+        if focus.timerCounting == true {
+            if focus.elapsedTime == focusTimer {
+                focus.stopTimer() //stop focus timer
+                self.focus.elapsedTime = 0
+                focusStartStopButton.text = "Start"
+                
+                let ac = UIAlertController(title: "Focus time up!", message: "You can head on you break now, you can choose to continue focus, and no more alerts will be sent", preferredStyle: .alert)
+                
+                ac.addAction(UIAlertAction(title: "Take Break", style: .default, handler: { _ in
+                    self.startBreak()
+                }))
+                ac.addAction(UIAlertAction(title: "Continue", style: .default))
+                
+                viewController.present(ac, animated: true)
+            }
+        }
+        
+        if rest.timerCounting == true {
+            if rest.elapsedTime == restTimer {
+                rest.stopTimer()
+                restStartStopButton.text = "Start"
+                rest.elapsedTime = 0
+                
+                let ac = UIAlertController(title: "Break time up!", message: "You must now focus again!", preferredStyle: .alert)
+                
+                ac.addAction(UIAlertAction(title: "Focus Mode", style: .default, handler: { _ in
+                    self.startFocus()
+                }))
+                
+                viewController.present(ac, animated: true)
+            }
+        }
+    }
+    
     func pickTime(timerName: String) {
+        guard let viewController = (self.view?.window?.rootViewController) else {return}
         // Take in what type of timer to set and pick at what time the timer should be set
         var messages: String
         var times: [(String, Int)] //the time in string format:the seconds in int format
-        
-        guard let viewController = self.view?.window?.rootViewController else {
-                return
-            }
         
         // define action for different timer types
         if timerName == "focus" { //if the focus timer is toggled
@@ -184,9 +231,11 @@ class GameScene: SKScene {
             ac.addAction(UIAlertAction(title: tString, style: .default) {
                 [self] _ in
                 if timerName == "focus" {
+                    focusTimer = tInt
                     focus.remainingTime = tInt
                     focus.remainingTimeString = self.focus.getTimeString(seconds: tInt)
                 } else {
+                    restTimer = tInt
                     rest.remainingTime = tInt
                     rest.remainingTimeString = self.rest.getTimeString(seconds: tInt)
                 }
