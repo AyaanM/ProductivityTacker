@@ -10,6 +10,8 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    weak var viewController: GameViewController? //define the game scene
+    
     //initialize classes
     var focus = Stopwatch(timerName: "focus")
     var rest = Stopwatch(timerName: "rest")
@@ -19,20 +21,20 @@ class GameScene: SKScene {
     var restStartStopButton: SKLabelNode!
     
     //define displays
-    var focusStopwatchDisplay: SKLabelNode!
-    var focusTimerDisplay: SKLabelNode!
+    var focusElapsedDisplay: SKLabelNode!
+    var focusRemainingDisplay: SKLabelNode!
     
-    var restStopwatchDisplay: SKLabelNode!
-    var restTimerDisplay: SKLabelNode!
+    var restElapsedDisplay: SKLabelNode!
+    var restRemainingDisplay: SKLabelNode!
     
     //define standalone labels
     var focusLabel: SKLabelNode!
     var restLabel: SKLabelNode!
     
     //define vars
-    var focusTimer: Int = 0
-    var restTimer: Int = 0
-        
+    var focusRemaining: Int = 0
+    var restRemaining: Int = 0
+    
     override func didMove(to view: SKView) {
         
         let background = SKSpriteNode(imageNamed: "background")
@@ -52,18 +54,18 @@ class GameScene: SKScene {
         addChild(focusLabel)
         
         //create the focus timer display
-        focusTimerDisplay = SKLabelNode(fontNamed: "Hoefler Text")
-        focusTimerDisplay.fontSize = 40
-        focusTimerDisplay.text = focus.remainingTimeString
-        focusTimerDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
-        addChild(focusTimerDisplay)
+        focusRemainingDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        focusRemainingDisplay.fontSize = 40
+        focusRemainingDisplay.text = "25:00"
+        focusRemainingDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
+        addChild(focusRemainingDisplay)
         
         //create the focus stopwatch display
-        focusStopwatchDisplay = SKLabelNode(fontNamed: "Hoefler Text")
-        focusStopwatchDisplay.fontSize = 40
-        focusStopwatchDisplay.text = rest.remainingTimeString
-        focusStopwatchDisplay.position = CGPoint(x: self.size.width / 1.5, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
-        addChild(focusStopwatchDisplay)
+        focusElapsedDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        focusElapsedDisplay.fontSize = 40
+        focusElapsedDisplay.text = "00:00"
+        focusElapsedDisplay.position = CGPoint(x: self.size.width / 1.5, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
+        addChild(focusElapsedDisplay)
         
         //create start focus button button
         focusStartStopButton = SKLabelNode(fontNamed: "Hoefler Text")
@@ -81,18 +83,18 @@ class GameScene: SKScene {
         addChild(restLabel)
         
         //create the breaktime timer display
-        restTimerDisplay = SKLabelNode(fontNamed: "Hoefler Text")
-        restTimerDisplay.fontSize = 35
-        restTimerDisplay.text = "05:00"
-        restTimerDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*8.5))
-        addChild(restTimerDisplay)
+        restRemainingDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        restRemainingDisplay.fontSize = 35
+        restRemainingDisplay.text = "05:00"
+        restRemainingDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*8.5))
+        addChild(restRemainingDisplay)
         
         //create the breaktime stopwatch display
-        restStopwatchDisplay = SKLabelNode(fontNamed: "Hoefler Text")
-        restStopwatchDisplay.fontSize = 35
-        restStopwatchDisplay.text = "00:00"
-        restStopwatchDisplay.position = CGPoint(x: self.size.width / 1.5, y: (self.size.height / 1.5) - (focusLabel.frame.height*8.5))
-        addChild(restStopwatchDisplay)
+        restElapsedDisplay = SKLabelNode(fontNamed: "Hoefler Text")
+        restElapsedDisplay.fontSize = 35
+        restElapsedDisplay.text = "00:00"
+        restElapsedDisplay.position = CGPoint(x: self.size.width / 1.5, y: (self.size.height / 1.5) - (focusLabel.frame.height*8.5))
+        addChild(restElapsedDisplay)
         
         //create start focus button button
         restStartStopButton = SKLabelNode(fontNamed: "Hoefler Text")
@@ -104,31 +106,31 @@ class GameScene: SKScene {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-            if let touch = touches.first {
-                    let location = touch.location(in: self)
-                    let objects = nodes(at: location)
-                
-                if objects.contains(focusTimerDisplay) {
-                    //choose what time you want to focus for, default is 25:00
-                    if !focus.timerCounting { //if the proTimer isn't already working
-                        pickTime(timerName: "focus")
-                    }
-                }
-                
-                if objects.contains(restTimerDisplay) {
-                    //choose what time you want to rest for, default is 5:00
-                    if !rest.timerCounting { //if the proTimer isn't already working
-                        pickTime(timerName: "break")
-                    }
-                }
+        if let touch = touches.first {
+            let location = touch.location(in: self)
+            let objects = nodes(at: location)
             
-                if objects.contains(focusStartStopButton) {
-                    startFocus()
+            if objects.contains(focusRemainingDisplay) {
+                //choose what time you want to focus for, default is 25:00
+                if !focus.timerCounting { //if the proTimer isn't already working
+                    viewController!.pickTime(timerName: "focus")
                 }
-                
-                if objects.contains(restStartStopButton) {
-                    startBreak()
+            }
+            
+            if objects.contains(restRemainingDisplay) {
+                //choose what time you want to rest for, default is 5:00
+                if !rest.timerCounting { //if the proTimer isn't already working
+                    viewController!.pickTime(timerName: "break")
                 }
+            }
+            
+            if objects.contains(focusStartStopButton) {
+                startFocus()
+            }
+            
+            if objects.contains(restStartStopButton) {
+                startBreak()
+            }
         }
     }
     
@@ -158,92 +160,18 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
-    
+        
         // Update the time label on every frame
-        focusStopwatchDisplay.text = focus.elapsedTimeString
-        restStopwatchDisplay.text = rest.elapsedTimeString
+        focusElapsedDisplay.text = focus.elapsedTimeString
+        restElapsedDisplay.text = rest.elapsedTimeString
         
-        focusTimerDisplay.text = focus.remainingTimeString
-        restTimerDisplay.text = rest.remainingTimeString
+        focusRemainingDisplay.text = focus.remainingTimeString
+        restRemainingDisplay.text = rest.remainingTimeString
         
-        checkTimesUp()
-        
-        }
-    
-    func checkTimesUp() {
-        guard let viewController = (self.view?.window?.rootViewController) else {return}
-        
-        if focus.timerCounting == true {
-            if focus.elapsedTime == focusTimer {
-                focus.stopTimer() //stop focus timer
-                self.focus.elapsedTime = 0
-                focusStartStopButton.text = "Start"
-                
-                let ac = UIAlertController(title: "Focus time up!", message: "You can head on you break now, you can choose to continue focus, and no more alerts will be sent", preferredStyle: .alert)
-                
-                ac.addAction(UIAlertAction(title: "Take Break", style: .default, handler: { _ in
-                    self.startBreak()
-                }))
-                ac.addAction(UIAlertAction(title: "Continue", style: .default))
-                
-                viewController.present(ac, animated: true)
-            }
-        }
-        
-        if rest.timerCounting == true {
-            if rest.elapsedTime == restTimer {
-                rest.stopTimer()
-                restStartStopButton.text = "Start"
-                rest.elapsedTime = 0
-                
-                let ac = UIAlertController(title: "Break time up!", message: "You must now focus again!", preferredStyle: .alert)
-                
-                ac.addAction(UIAlertAction(title: "Focus Mode", style: .default, handler: { _ in
-                    self.startFocus()
-                }))
-                
-                viewController.present(ac, animated: true)
-            }
-        }
-    }
-    
-    func pickTime(timerName: String) {
-        guard let viewController = (self.view?.window?.rootViewController) else {return}
-        // Take in what type of timer to set and pick at what time the timer should be set
-        var messages: String
-        var times: [(String, Int)] //the time in string format:the seconds in int format
-        
-        // define action for different timer types
-        if timerName == "focus" { //if the focus timer is toggled
-            messages = "Pick the time you would like to focus for, 'run timer already' means no set time (uniterrupted focus)"
-            times = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
-        } else {
-            messages = "Pick the time you would like to take a break for, a notification will be sent when the break ends. If you exceed your break by 5 minutes your phone will explode."
-            times = [("5 minutes", 300), ("10 minutes", 600), ("15 minutes", 900), ("30 minutes", 1800)]
-        }
-         
-        // create the alert
-        let ac = UIAlertController(title: "Pick Time", message: messages, preferredStyle: .actionSheet)
-        
-        // depending on what was picked, change variables
-        for time in times { //time string and time int]
-            let (tString, tInt) = time
-            ac.addAction(UIAlertAction(title: tString, style: .default) {
-                [self] _ in
-                if timerName == "focus" {
-                    focusTimer = tInt
-                    focus.remainingTime = tInt
-                    focus.remainingTimeString = self.focus.getTimeString(seconds: tInt)
-                } else {
-                    restTimer = tInt
-                    rest.remainingTime = tInt
-                    rest.remainingTimeString = self.rest.getTimeString(seconds: tInt)
-                }
-            })
-        }
-        
-        viewController.present(ac, animated: true)
+        viewController!.checkTimesUp()
         
     }
     
 }
+    
+
