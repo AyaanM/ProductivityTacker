@@ -90,42 +90,17 @@ class GameViewController: UIViewController {
         
         present(pickerViewController, animated: true, completion: nil)
         
-        //        // Take in what type of timer to set and pick at what time the timer should be set
-        //        var messages: String
-        //        var times: [(String, Int)] //the time in string format:the seconds in int format
-        //
-        //        // define action for different timer types
-        //        if timerName == "focus" { //if the focus timer is toggled
-        //            messages = "Pick the time you would like to focus for, 'run timer already' means no set time (uniterrupted focus)"
-        //            times = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
-        //        } else {
-        //            messages = "Pick the time you would like to take a break for, a notification will be sent when the break ends. If you exceed your break by 5 minutes your phone will explode."
-        //            times = [("5 minutes", 300), ("10 minutes", 600), ("15 minutes", 900), ("30 minutes", 1800)]
-        //        }
-        //
-        //        // create the alert
-        //        let ac = UIAlertController(title: "Pick Time", message: messages, preferredStyle: .actionSheet)
-        //
-        //        // depending on what was picked, change variables
-        //        for time in times { //time string and time int]
-        //            let (tString, tInt) = time
-        //            ac.addAction(UIAlertAction(title: tString, style: .default) {
-        //                [self] _ in
-        //                if timerName == "focus" {
-        //                    currentGame!.focusRemaining = tInt
-        //                    currentGame!.focus.remainingTime = tInt
-        //                    currentGame!.focus.remainingTimeString = currentGame!.focus.getTimeString(seconds: tInt)
-        //                } else {
-        //                    currentGame!.restRemaining = tInt
-        //                    currentGame!.rest.remainingTime = tInt
-        //                    currentGame!.rest.remainingTimeString = currentGame!.rest.getTimeString(seconds: tInt)
-        //                }
-        //            })
-        //        }
-        //
-        //        present(ac, animated: true)
-        //
-        //    }
+        if pickerViewController.selectedTime > 0{
+            print(pickerViewController.selectedTime)
+        }
+        
+//        if timerName == "focus" {
+//            pickerViewController.timeOptions = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
+//            currentGame!.focusRemaining = pickerViewController.selectedTime
+//        } else {
+//            pickerViewController.timeOptions = [("5 minutes", 300), ("10 minutes", 600), ("15 minutes", 900), ("30 minutes", 1800)]
+//            currentGame!.restRemaining = pickerViewController.selectedTime
+//        }
     }
 }
 
@@ -133,10 +108,10 @@ class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     let pickerView = UIPickerView() //import the interface of the picker view
     
-    let timeOptions = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
+    var timeOptions: [(String, Int)] = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
     
     var selectedTime: Int = 0
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -148,9 +123,24 @@ class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         pickerView.layer.cornerRadius = 10.0
         
         view.addSubview(pickerView) //add view before adding constraints to add to hierchy
-
+        
+        //create constraints for pickerView
         pickerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([pickerView.centerXAnchor.constraint(equalTo: view.centerXAnchor), pickerView.centerYAnchor.constraint(equalTo: view.centerYAnchor)]) //create constraints to poisition at middle of screen
+        
+        let cancelButton = UIButton()
+        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.addTarget(self, action: #selector(cancelButton(sender:)), for: .touchDown)
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        let okButton = UIButton()
+        okButton.setTitle("Ok", for: .normal)
+        okButton.addTarget(self, action: #selector(okButton(sender:)), for: .touchDown)
+        okButton.translatesAutoresizingMaskIntoConstraints = false
+
+        pickerView.addSubview(okButton)
+        pickerView.addSubview(cancelButton)
+
         
     }
 
@@ -168,6 +158,14 @@ class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerView
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return timeOptions.count //counts everything in array and displays it
+    }
+    
+    @objc func cancelButton(sender: UIButton) {
+        print("cancel")
+    }
+    
+    @objc func okButton(sender: UIButton) {
+        print("ok")
     }
     
 }

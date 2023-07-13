@@ -32,8 +32,8 @@ class GameScene: SKScene {
     var restLabel: SKLabelNode!
     
     //define vars
-    var focusRemaining: Int = 0
-    var restRemaining: Int = 0
+    var focusRemaining: Int = 1500
+    var restRemaining: Int = 300
     
     override func didMove(to view: SKView) {
         
@@ -56,7 +56,7 @@ class GameScene: SKScene {
         //create the focus timer display
         focusRemainingDisplay = SKLabelNode(fontNamed: "Hoefler Text")
         focusRemainingDisplay.fontSize = 40
-        focusRemainingDisplay.text = "25:00"
+        focusRemainingDisplay.text = focus.remainingTimeString
         focusRemainingDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*2))
         addChild(focusRemainingDisplay)
         
@@ -85,7 +85,7 @@ class GameScene: SKScene {
         //create the breaktime timer display
         restRemainingDisplay = SKLabelNode(fontNamed: "Hoefler Text")
         restRemainingDisplay.fontSize = 35
-        restRemainingDisplay.text = "05:00"
+        restRemainingDisplay.text = rest.remainingTimeString
         restRemainingDisplay.position = CGPoint(x: self.size.width / 3, y: (self.size.height / 1.5) - (focusLabel.frame.height*8.5))
         addChild(restRemainingDisplay)
         
