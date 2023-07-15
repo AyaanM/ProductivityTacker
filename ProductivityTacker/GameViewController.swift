@@ -90,10 +90,6 @@ class GameViewController: UIViewController {
         
         present(pickerViewController, animated: true, completion: nil)
         
-        if pickerViewController.selectedTime > 0{
-            print(pickerViewController.selectedTime)
-        }
-        
 //        if timerName == "focus" {
 //            pickerViewController.timeOptions = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
 //            currentGame!.focusRemaining = pickerViewController.selectedTime
@@ -121,27 +117,28 @@ class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         pickerView.backgroundColor = UIColor.black
         pickerView.setValue(UIColor.white, forKey: "textColor")
         pickerView.layer.cornerRadius = 10.0
-        
         view.addSubview(pickerView) //add view before adding constraints to add to hierchy
-        
-        //create constraints for pickerView
         pickerView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([pickerView.centerXAnchor.constraint(equalTo: view.centerXAnchor), pickerView.centerYAnchor.constraint(equalTo: view.centerYAnchor)]) //create constraints to poisition at middle of screen
-        
-        let cancelButton = UIButton()
-        cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.addTarget(self, action: #selector(cancelButton(sender:)), for: .touchDown)
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        let okButton = UIButton()
-        okButton.setTitle("Ok", for: .normal)
-        okButton.addTarget(self, action: #selector(okButton(sender:)), for: .touchDown)
-        okButton.translatesAutoresizingMaskIntoConstraints = false
 
-        pickerView.addSubview(okButton)
-        pickerView.addSubview(cancelButton)
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped))
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 44))
+        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default) //set to empty uiImage
+        toolbar.tintColor = .yellow
+        toolbar.setItems([spacer, cancelButton, spacer, doneButton, spacer], animated: true) //spacers to give toolbar a nicer look
+        view.addSubview(toolbar)
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
         
+        NSLayoutConstraint.activate([ //contraints for actual picker view and for tool bar
+            pickerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pickerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            toolbar.leadingAnchor.constraint(equalTo: pickerView.leadingAnchor),
+            toolbar.trailingAnchor.constraint(equalTo: pickerView.trailingAnchor),
+            toolbar.bottomAnchor.constraint(equalTo: pickerView.bottomAnchor),
+            toolbar.heightAnchor.constraint(equalToConstant: 50)
+        ])
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
@@ -160,12 +157,12 @@ class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         return timeOptions.count //counts everything in array and displays it
     }
     
-    @objc func cancelButton(sender: UIButton) {
+    @objc func cancelButtonTapped() {
         print("cancel")
     }
     
-    @objc func okButton(sender: UIButton) {
-        print("ok")
+    @objc func doneButtonTapped() {
+        print("done")
     }
     
 }
