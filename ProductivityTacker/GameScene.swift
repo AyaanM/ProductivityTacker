@@ -113,14 +113,14 @@ class GameScene: SKScene {
             if objects.contains(focusRemainingDisplay) {
                 //choose what time you want to focus for, default is 25:00
                 if !focus.timerCounting { //if the proTimer isn't already working
-                    viewController!.pickTime(timerName: "focus")
+                    viewController!.pickTime(timerName: "focus", currentTime: focusRemaining)
                 }
             }
             
             if objects.contains(restRemainingDisplay) {
                 //choose what time you want to rest for, default is 5:00
                 if !rest.timerCounting { //if the proTimer isn't already working
-                    viewController!.pickTime(timerName: "break")
+                    viewController!.pickTime(timerName: "break", currentTime: restRemaining)
                 }
             }
             

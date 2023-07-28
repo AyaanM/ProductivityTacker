@@ -86,19 +86,37 @@ class GameViewController: UIViewController {
         }
     }
     
-    func pickTime(timerName: String) {
+    func pickTime(timerName: String, currentTime: Int) {
         
         present(pickerViewController, animated: true, completion: nil)
         
 //        if timerName == "focus" {
+//            if timeSelected != currentTime { // if the selected time isn't the time passed in, change it
+//                print(timeSelected)
+//                // currentGame?.focusRemaining = timeSelected
+//            }
+//        } else {
+//            if timeSelected != currentTime { // if the selected time isn't the time passed in, change it
+//                // currentGame?.restRemaining = timeSelected
+//            }
+//        }
+        
+        if timeSelected != currentTime { // if the selected time isn't the time passed in, change it
+            print(timeSelected)
+            // currentGame?.focusRemaining = timeSelected
+        }
+        print(timeSelected)
+        
+        
+//        if timerName == "focus" {
 //            pickerViewController.timeOptions = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
-//            currentGame!.focusRemaining = pickerViewController.selectedTime
 //        } else {
 //            pickerViewController.timeOptions = [("5 minutes", 300), ("10 minutes", 600), ("15 minutes", 900), ("30 minutes", 1800)]
-//            currentGame!.restRemaining = pickerViewController.selectedTime
 //        }
     }
 }
+
+var timeSelected: Int = 0
 
 class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -158,11 +176,13 @@ class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     @objc func cancelButtonTapped() {
-        print("cancel")
+        dismiss(animated: true)
     }
     
     @objc func doneButtonTapped() {
-        print("done")
+        timeSelected = selectedTime
+        dismiss(animated: true)
+        return
     }
     
 }
