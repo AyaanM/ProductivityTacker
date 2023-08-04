@@ -32,8 +32,18 @@ class GameScene: SKScene {
     var restLabel: SKLabelNode!
     
     //define vars
-    var focusRemaining: Int = 1500
-    var restRemaining: Int = 300
+    var focusRemaining: Int = 1500 {
+        didSet {
+            focus.remainingTime = focusRemaining
+            focus.remainingTimeString = focus.getTimeString(seconds: focusRemaining)
+        }
+    }
+    var restRemaining: Int = 300 {
+        didSet {
+            rest.remainingTime = restRemaining
+            rest.remainingTimeString = rest.getTimeString(seconds: focusRemaining)
+        }
+    }
     
     override func didMove(to view: SKView) {
         

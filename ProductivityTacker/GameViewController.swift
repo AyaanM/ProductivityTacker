@@ -9,11 +9,13 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameViewController: UIViewController {
-    
+class GameViewController: UIViewController, PickerViewControllerDelegate {
+
     var currentGame: GameScene?
     
     let pickerViewController = PickerViewController()
+    
+    var timeSelected = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,44 +89,45 @@ class GameViewController: UIViewController {
     }
     
     func pickTime(timerName: String, currentTime: Int) {
-        
-        present(pickerViewController, animated: true, completion: nil)
-        
-//        if timerName == "focus" {
-//            if timeSelected != currentTime { // if the selected time isn't the time passed in, change it
-//                print(timeSelected)
-//                // currentGame?.focusRemaining = timeSelected
-//            }
-//        } else {
-//            if timeSelected != currentTime { // if the selected time isn't the time passed in, change it
-//                // currentGame?.restRemaining = timeSelected
-//            }
-//        }
-        
-        if timeSelected != currentTime { // if the selected time isn't the time passed in, change it
-            print(timeSelected)
-            // currentGame?.focusRemaining = timeSelected
+        pickerViewController.delegate = self
+        timeSelected = currentTime
+        if timerName == "focus" {
+            pickerViewController.timeOptions = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
+        } else {
+            pickerViewController.timeOptions = [("5 minutes", 300), ("10 minutes", 600), ("15 minutes", 900), ("30 minutes", 1800)]
         }
-        print(timeSelected)
         
+        pickerViewController.timerType = timerName
+        present(pickerViewController, animated: true, completion: nil)
+        return
+    }
+    
+    func didSelectTime(_ time: Int, forTimer timerName: String) { //upon being called by delegate, it does it's job of assigning variables
+        timeSelected = time
         
-//        if timerName == "focus" {
-//            pickerViewController.timeOptions = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
-//        } else {
-//            pickerViewController.timeOptions = [("5 minutes", 300), ("10 minutes", 600), ("15 minutes", 900), ("30 minutes", 1800)]
-//        }
+        if timerName == "focus" {
+               currentGame?.focusRemaining = timeSelected
+           } else {
+               currentGame?.restRemaining = timeSelected
+           }
     }
 }
 
-var timeSelected: Int = 0
+protocol PickerViewControllerDelegate: AnyObject { //protocol is list of comands or tasks the delagate should do
+    func didSelectTime(_ time: Int, forTimer timerName: String)
+}
 
 class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     let pickerView = UIPickerView() //import the interface of the picker view
     
-    var timeOptions: [(String, Int)] = [("10 minutes", 600), ("25 minutes", 1500), ("45 minutes", 2700), ("1 hour", 3600), ("2 hours", 7200), ("3 hours", 10800)]
+    var timeOptions: [(String, Int)] = [("", 0)]
     
     var selectedTime: Int = 0
+    
+    var timerType: String = ""
+    
+    var delegate: PickerViewControllerDelegate? //delegate tells what to do
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -180,7 +183,7 @@ class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     @objc func doneButtonTapped() {
-        timeSelected = selectedTime
+        delegate?.didSelectTime(selectedTime, forTimer: timerType) //delegate waits to be told what to do
         dismiss(animated: true)
         return
     }
